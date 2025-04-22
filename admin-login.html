@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Play All Sports Complex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#004b91">
+<link rel="manifest" href="/manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-image: url('https://www.playall.in/images/IMG_0125.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            color: #333;
+            position: relative;
+        }
+        
+        body:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 1;
+        }
+        
+        .content {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-grow: 1;
+        }
+        
+        .image-showcase {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-left: 60px;
+        }
+        
+        .showcase-text {
+            max-width: 500px;
+            color: #ffffff;
+        }
+        
+        .showcase-text h3 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        .showcase-text p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        .login-section {
+            width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 40px;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 35px 40px;
+            border-radius: 15px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid #004b91;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input[type="email"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="email"]:focus {
+            border-color: #004b91;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 75, 145, 0.3);
+        }
+        
+        button {
+            background: linear-gradient(to right, #007bff, #004b91);
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash-success {
+            color: #2e7d32;
+            padding: 12px;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+        }
+        
+        .flash-error {
+            color: #c62828;
+            padding: 12px;
+            background-color: #ffebee;
+            border-radius: 8px;
+        }
+        
+        .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #004b91;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .back-link:hover {
+            color: #007bff;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .image-showcase {
+                padding: 20px;
+                text-align: center;
+            }
+            
+            .login-section {
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <h1>PLAY ALL SPORTS COMPLEX</h1>
+        </div>
+        
+        <div class="main-container">
+            <div class="image-showcase">
+                <div class="showcase-text">
+                    <h3>Admin Access</h3>
+                    <p>Welcome to the admin portal. Secure access to manage facilities, monitor bookings, and maintain optimal sports complex operations.</p>
+                    <p>Full control over Play All Sports Complex management system.</p>
+                </div>
+            </div>
+            
+            <div class="login-section">
+                <div class="login-card">
+                    <h2>Admin Login</h2>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="flash-messages">
+                                {% for category, message in messages %}
+                                    <div class="flash-{{ category }}">{{ message }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST">
+                        <label for="email">Enter Admin Email:</label>
+                        <input type="email" id="email" name="email" placeholder="admin@playall.in" required>
+                        <button type="submit">Send OTP</button>
+                    </form>
+                    
+                    <a href="/" class="back-link">← Back to Home</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Play All Sports Complex. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

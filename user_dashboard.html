@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#004b91">
+<link rel="manifest" href="/manifest.json">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            background-color: #f5f7fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Section backgrounds with fixed positioning */
+        .section {
+            padding: 40px 20px;
+            position: relative;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Background image overlay for readability */
+        .section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.85);
+            z-index: 1;
+        }
+
+        /* Position content above the overlay */
+        .section > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header section with sports background */
+        .header-section {
+            background-color: #3498db;
+            background-image: url('https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            padding: 60px 20px 40px;
+        }
+
+        .header-section::before {
+            background-color: rgba(52, 152, 219, 0.85);
+        }
+
+        /* Cricket section with cricket-specific background */
+        .cricket-section {
+            background-color: #27ae60;
+            background-image: url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        }
+
+        .cricket-section::before {
+            background-color: rgba(39, 174, 96, 0.85);
+        }
+
+        /* Badminton section with badminton-specific background */
+        .badminton-section {
+            background-color: #9b59b6;
+            background-image: url('https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        }
+
+        .badminton-section::before {
+            background-color: rgba(155, 89, 182, 0.85);
+        }
+
+        /* Tennis section with tennis-specific background */
+        .tennis-section {
+            background-color: #f39c12;
+            background-image: url('https://images.unsplash.com/photo-1531315630201-bb15abeb1653?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        }
+
+        .tennis-section::before {
+            background-color: rgba(243, 156, 18, 0.85);
+        }
+
+        /* Booking section with calendar/time background */
+        .booking-section {
+            background-color: #34495e;
+            background-image: url('https://images.unsplash.com/photo-1506784365847-bbad939e9335?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        }
+
+        .booking-section::before {
+            background-color: rgba(52, 73, 94, 0.85);
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            margin-bottom: 15px;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-top: 30px;
+            text-align: center;
+            color: #fff;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 25px;
+            color: #fff;
+            border-left: 4px solid #fff;
+            padding-left: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        p {
+            margin-bottom: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 8px;
+            border-radius: 5px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        /* Form Elements */
+        form {
+            margin-bottom: 30px;
+        }
+
+        select, button, input[type="date"] {
+            padding: 12px 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 16px;
+            margin: 5px 0;
+            width: 100%;
+            max-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 1em;
+            padding-right: 30px;
+        }
+
+        select:focus, button:focus, input[type="date"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.5);
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: inline-block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        /* Radio Group */
+        .radio-group {
+            background-color: rgba(248, 249, 250, 0.8);
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+            border-left: 4px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .radio-group:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 0;
+            font-size: 1.1rem;
+        }
+
+        input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            accent-color: #3498db;
+        }
+
+        /* Calendar View */
+        .calendar-view {
+            margin: 20px 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .weekday-header {
+            text-align: center;
+            font-weight: 600;
+            padding: 8px;
+            background-color: #f0f3f6;
+            border-radius: 5px;
+        }
+
+        .date-cell {
+            cursor: pointer;
+            text-align: center;
+            padding: 10px 5px;
+            border-radius: 5px;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 1px solid #e0e0e0;
+        }
+
+        .date-cell.available {
+            background-color: rgba(212, 237, 218, 0.6);
+            border: 1px solid #28a745;
+        }
+
+        .date-cell.available:hover {
+            background-color: rgba(212, 237, 218, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .date-cell.date-disabled {
+            background-color: #f8f9fa;
+            color: #adb5bd;
+            cursor: not-allowed;
+            border: 1px dashed #dee2e6;
+        }
+
+        .date-cell.selected {
+            background-color: #3498db;
+            color: white;
+            border: 1px solid #2980b9;
+            transform: scale(1.05);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .date-num {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .date-day {
+            font-size: 12px;
+            margin-top: 5px;
+            color: #6c757d;
+        }
+
+        /* Availability Summary */
+        .availability-summary {
+            margin: 20px 0 20px 25px;
+        }
+
+        details {
+            margin-bottom: 12px;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        details:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        summary {
+            padding: 12px 15px;
+            background-color: rgba(234, 242, 248, 0.8);
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            user-select: none;
+        }
+
+        summary:hover {
+            background-color: rgba(212, 230, 241, 0.9);
+        }
+
+        summary:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.5);
+        }
+
+        details[open] summary {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            background-color: rgba(212, 230, 241, 0.9);
+        }
+
+        /* Slot Info */
+        .slot-info {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid #eee;
+        }
+
+        .slot-info:last-child {
+            border-bottom: none;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        .slot-time {
+            width: 100px;
+            font-weight: 500;
+        }
+
+        .slot-availability {
+            margin-left: 15px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .available {
+            color: #27ae60;
+            background-color: rgba(232, 246, 239, 0.9);
+        }
+
+        .limited {
+            color: #e67e22;
+            background-color: rgba(254, 245, 234, 0.9);
+        }
+
+        .full {
+            color: #e74c3c;
+            background-color: rgba(250, 229, 227, 0.9);
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            position: sticky;
+            top: 20px;
+            z-index: 10;
+        }
+
+        .flash-message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-weight: 500;
+            animation: fadeIn 0.5s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success {
+            background-color: rgba(212, 237, 218, 0.95);
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .error {
+            background-color: rgba(248, 215, 218, 0.95);
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        /* Links */
+        a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #3498db;
+            border-radius: 5px;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        a:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .section {
+                padding: 30px 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            h3 {
+                font-size: 1.2rem;
+            }
+            
+            .availability-summary {
+                margin-left: 15px;
+            }
+            
+            .date-grid {
+                grid-template-columns: repeat(4, 1fr);
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Date picker enhancement */
+        .date-picker-container {
+            margin: 20px 0;
+        }
+        .back-link {
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            background-color: #2c3e50;
+        }
+        
+        .back-link a:hover {
+            background-color: #1a2530;
+        }
+
+        .date-picker-container h4 {
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .calendar-view h4 {
+            color: #2c3e50;
+            text-shadow: none;
+        }
+        
+        /* Sport-specific styling adjustments */
+        .cricket-section .radio-group {
+            border-left-color: #27ae60;
+        }
+        
+        .badminton-section .radio-group {
+            border-left-color: #9b59b6;
+        }
+        
+        .tennis-section .radio-group {
+            border-left-color: #f39c12;
+        }
+        
+        .booking-section .radio-group {
+            border-left-color: #34495e;
+        }
+        
+    </style>
+    <script>
+        // When DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Set min and max dates for date picker
+    const bookingDate = document.getElementById('booking_date');
+    if (bookingDate) {
+        const today = new Date();
+        const maxDate = new Date();
+        maxDate.setDate(today.getDate() + 7);
+        
+        // Format dates as YYYY-MM-DD for the date input
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+        
+        bookingDate.min = formatDate(today);
+        bookingDate.max = formatDate(maxDate);
+        bookingDate.value = formatDate(today);
+        
+        // Initialize the calendar view
+        initCalendarView();
+    }
+});
+
+// Function to initialize calendar view
+function initCalendarView() {
+    const today = new Date();
+    const calendarContainer = document.getElementById('calendar-dates');
+    
+    if (!calendarContainer) return;
+    
+    // Clear existing calendar
+    calendarContainer.innerHTML = '';
+    
+    // Generate dates for the next 7 days
+    for (let i = 0; i < 7; i++) {
+        const currentDate = new Date(today);
+        currentDate.setDate(today.getDate() + i);
+        
+        const dateCell = document.createElement('div');
+        dateCell.className = 'date-cell available';
+        dateCell.setAttribute('data-date', formatDateYMD(currentDate));
+        
+        const dateNum = document.createElement('div');
+        dateNum.className = 'date-num';
+        dateNum.textContent = currentDate.getDate();
+        
+        const dateDay = document.createElement('div');
+        dateDay.className = 'date-day';
+        // Get the day name (Sun, Mon, etc.)
+        const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        dateDay.textContent = weekdays[currentDate.getDay()];
+        
+        dateCell.appendChild(dateNum);
+        dateCell.appendChild(dateDay);
+        
+        // Add click event to select date
+        dateCell.addEventListener('click', function() {
+            // Remove selected class from all cells
+            document.querySelectorAll('.date-cell').forEach(cell => {
+                cell.classList.remove('selected');
+            });
+            
+            // Add selected class to this cell
+            this.classList.add('selected');
+            
+            // Update hidden input
+            const selectedDate = this.getAttribute('data-date');
+            document.getElementById('booking_date').value = selectedDate;
+            
+            // Fetch available times for this date
+            fetchAvailableTimes();
+        });
+        
+        calendarContainer.appendChild(dateCell);
+    }
+    
+    // Select today by default
+    const todayCell = document.querySelector(`[data-date="${formatDateYMD(today)}"]`);
+    if (todayCell) {
+        todayCell.classList.add('selected');
+        fetchAvailableTimes(); // Load initial times
+    }
+}
+
+// Helper function to format date as YYYY-MM-DD
+function formatDateYMD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Function to format date as DD-MM-YYYY
+function formatDateDMY(dateStr) {
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+}
+
+// Function to fetch available times for the selected date and sport
+function fetchAvailableTimes() {
+    const sportRadios = document.getElementsByName('sport');
+    const dateInput = document.getElementById('booking_date');
+    const timeSelect = document.getElementById('time_select');
+    const dateDisplay = document.getElementById('selected_date_display');
+    
+    // Clear previous options
+    timeSelect.innerHTML = '<option value="">-- Loading available times --</option>';
+    
+    // Get selected sport
+    let selectedSport = '';
+    for (let radio of sportRadios) {
+        if (radio.checked) {
+            selectedSport = radio.value;
+            break;
+        }
+    }
+    
+    // Get selected date
+    const selectedDate = dateInput.value;
+    
+    // Update the displayed selected date
+    if (dateDisplay) {
+        dateDisplay.textContent = formatDateDMY(selectedDate);
+    }
+    
+    // Validate inputs
+    if (!selectedSport || !selectedDate) {
+        timeSelect.innerHTML = '<option value="">-- Select sport and date first --</option>';
+        return;
+    }
+    
+    // Fetch available times from the API
+    fetch(`/api/get-available-times?sport=${encodeURIComponent(selectedSport)}&date=${encodeURIComponent(selectedDate)}`)
+        .then(response => response.json())
+        .then(data => {
+            timeSelect.innerHTML = ''; // Clear loading message
+            
+            // Add default option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- Select a time --';
+            timeSelect.appendChild(defaultOption);
+            
+            if (data.success && data.times.length > 0) {
+                // Add time options from API response
+                data.times.forEach(timeInfo => {
+                    const option = document.createElement('option');
+                    option.value = timeInfo.time;
+                    option.textContent = `${timeInfo.display} (${timeInfo.available} slots available)`;
+                    timeSelect.appendChild(option);
+                });
+            } else {
+                const noTimesOption = document.createElement('option');
+                noTimesOption.value = '';
+                noTimesOption.textContent = 'No available times for this date';
+                noTimesOption.disabled = true;
+                timeSelect.appendChild(noTimesOption);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching available times:', error);
+            timeSelect.innerHTML = '<option value="">Error loading times. Please try again.</option>';
+        });
+}
+
+// Function to update the displayed date format
+function updateDateDisplay() {
+    const selectedDateElement = document.getElementById('selected-date');
+    const dateInput = document.getElementById('booking_date');
+    
+    if (selectedDateElement && dateInput.value) {
+        const formattedDate = formatDateDMY(dateInput.value);
+        selectedDateElement.textContent = formattedDate;
+    }
+}
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <section class="section header-section">
+            <h1>Welcome, {{ email }}</h1>
+            
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-messages">
+                {% for category, message in messages %}
+                  <div class="flash-message {{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+            
+            <h2>Book Your Sports Slots</h2>
+            <p>You can book slots from today ({{ today }}) up to {{ max_date }}</p>
+        </section>
+        
+        <form action="/book-slot" method="post">
+            <input type="hidden" name="email" value="{{ email }}">
+            <input type="hidden" id="booking_date" name="booking_date" value="{{ today }}">
+            
+            <!-- Cricket Section -->
+            <section class="section cricket-section">
+                <h3>Cricket - Max 24 Members per Slot</h3>
+                <p>Available slots: Mon-Fri (6am, 4pm), Sun (6am, 12pm, 6pm)</p>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="sport" value="Cricket" required onclick="fetchAvailableTimes()"> Cricket
+                    </label>
+                    
+                    <!-- Display availability summary for Cricket -->
+                    <div class="availability-summary">
+                        {% for date, times in cricket_availabilities.items() %}
+                            <details>
+                                <summary>{{ date }} ({{ date|datetime('%a') }})</summary>
+                                {% for time, available in times.items() %}
+                                    <div class="slot-info">
+                                        <span class="slot-time">{{ time }}:</span>
+                                        <span class="slot-availability {% if available == 0 %}full{% elif available < 5 %}limited{% else %}available{% endif %}">
+                                            {{ available }} slots available
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </details>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Badminton Section -->
+            <section class="section badminton-section">
+                <h3>Badminton - Max 40 Members per Slot</h3>
+                <p>Available slots: Mon-Fri (5am, 7am, 9am, 2pm, 9pm), Weekend (4pm, 6pm)</p>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="sport" value="Badminton" required onclick="fetchAvailableTimes()"> Badminton
+                    </label>
+                    
+                    <!-- Display availability summary for Badminton -->
+                    <div class="availability-summary">
+                        {% for date, times in badminton_availabilities.items() %}
+                            <details>
+                                <summary>{{ date }} ({{ date|datetime('%a') }})</summary>
+                                {% for time, available in times.items() %}
+                                    <div class="slot-info">
+                                        <span class="slot-time">{{ time }}:</span>
+                                        <span class="slot-availability {% if available == 0 %}full{% elif available < 10 %}limited{% else %}available{% endif %}">
+                                            {{ available }} slots available
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </details>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Tennis Section -->
+            <section class="section tennis-section">
+                <h3>Tennis - Max 10 Members per Slot</h3>
+                <p>Available slots: Same as Badminton</p>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="sport" value="Tennis" required onclick="fetchAvailableTimes()"> Tennis
+                    </label>
+                    
+                    <!-- Display availability summary for Tennis -->
+                    <div class="availability-summary">
+                        {% for date, times in tennis_availabilities.items() %}
+                            <details>
+                                <summary>{{ date }} ({{ date|datetime('%a') }})</summary>
+                                {% for time, available in times.items() %}
+                                    <div class="slot-info">
+                                        <span class="slot-time">{{ time }}:</span>
+                                        <span class="slot-availability {% if available == 0 %}full{% elif available < 3 %}limited{% else %}available{% endif %}">
+                                            {{ available }} slots available
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </details>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Booking Section -->
+            <section class="section booking-section">
+                <h3>Book a Slot:</h3>
+                
+                <!-- Calendar Date Selection -->
+                <div class="calendar-view">
+                    <h4>Select Date: <span id="selected_date_display">{{ today|datetime('%d-%m-%Y') }}</span></h4>
+                    <div id="calendar-dates" class="date-grid">
+                        <!-- Calendar dates will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Time selection -->
+                <label for="time_select">Select Time:</label>
+                <select name="time" id="time_select" required>
+                    <option value="">-- Select sport & date first --</option>
+                </select>
+                
+                <br><br>
+                <button type="submit">Book Slot</button>
+            </section>
+        </form>
+        
+        <br>
+        <a href="/booking-history?email={{ email }}">View Booking History</a>
+        <div class="back-link">
+            <a href="/">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

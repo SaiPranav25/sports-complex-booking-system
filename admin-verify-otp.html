@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin OTP Verification - Play All Sports Complex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#004b91">
+<link rel="manifest" href="/manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-image: url('https://www.playall.in/images/IMG_0125.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            color: #333;
+            position: relative;
+        }
+        
+        /* Semi-transparent overlay to improve text readability */
+        body:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 1;
+        }
+        
+        .content {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-grow: 1;
+        }
+        
+        .image-showcase {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-left: 60px;
+        }
+        
+        .showcase-text {
+            max-width: 500px;
+            color: #ffffff;
+        }
+        
+        .showcase-text h3 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        .showcase-text p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        .otp-section {
+            width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 40px;
+        }
+        
+        .otp-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 40px;
+            border-radius: 15px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .otp-card h2 {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        .email-info {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #444;
+            text-align: left;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 18px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+            text-align: center;
+            letter-spacing: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #ff6a00;
+            outline: none;
+            box-shadow: 0 0 8px rgba(255, 106, 0, 0.3);
+        }
+        
+        button {
+            background: linear-gradient(to right, #ff6a00, #ee0979);
+            color: white;
+            border: none;
+            padding: 14px 15px;
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash-success {
+            color: #2e7d32;
+            padding: 12px;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .flash-error {
+            color: #c62828;
+            padding: 12px;
+            background-color: #ffebee;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff6a00;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #ee0979;
+            text-decoration: underline;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .image-showcase {
+                padding: 20px 20px 0 20px;
+            }
+            
+            .otp-section {
+                width: 100%;
+                padding: 20px;
+                margin-top: 20px;
+            }
+            
+            .otp-card {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .showcase-text h3 {
+                font-size: 1.8rem;
+            }
+            
+            .showcase-text p {
+                font-size: 1rem;
+            }
+            
+            .otp-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <h1>PLAY ALL SPORTS COMPLEX</h1>
+        </div>
+        
+        <div class="main-container">
+            <div class="image-showcase">
+                <div class="showcase-text">
+                    <h3>Admin Verification</h3>
+                    <p>We've sent a one-time password (OTP) to your registered email address for verification.</p>
+                    <p>Please check your inbox and enter the 6-digit code to complete the authentication process.</p>
+                </div>
+            </div>
+            
+            <div class="otp-section">
+                <div class="otp-card">
+                    <h2>Admin OTP Verification</h2>
+                    
+                    <div class="email-info">
+                        Code sent to: {{ email }}
+                    </div>
+                    
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <div class="flash-messages">
+                                {% for category, message in messages %}
+                                    <div class="flash-{{ category }}">{{ message }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <form method="POST">
+                        <label for="otp">Enter Your OTP:</label>
+                        <input type="text" id="otp" name="otp" required maxlength="6" placeholder="······">
+                        <button type="submit">Verify OTP</button>
+                    </form>
+                    
+                    <div>
+                        <a href="/" class="back-link">← Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Play All Sports Complex. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#004b91">
+<link rel="manifest" href="/manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .admin-dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3, h4 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .actions {
+            margin: 20px 0;
+        }
+        button, select {
+            padding: 8px 12px;
+            margin-right: 10px;
+        }
+        .back-link {
+            margin-top: 20px;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-success {
+            color: green;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+        }
+        .flash-error {
+            color: red;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 5px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .sport-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .time-slot {
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #fcfcfc;
+        }
+        
+        .time-slot h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        
+        .available-count {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #e8f5e9;
+            border-radius: 3px;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .low-availability {
+            background-color: #fff8e1;
+            color: #FF9800;
+        }
+        
+        .no-availability {
+            background-color: #ffebee;
+            color: #F44336;
+        }
+        
+        .sport-container {
+            margin-bottom: 30px;
+        }
+        
+        .day-container {
+            margin-bottom: 20px;
+        }
+        
+        .day-header {
+            background-color: #2196F3;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .filter-controls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .filter-controls select {
+            margin-right: 10px;
+            padding: 8px;
+        }
+        
+        .filter-controls button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .filter-controls button:hover {
+            background-color: #45a049;
+        }
+        
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-box h3 {
+            margin-top: 0;
+        }
+        
+        .total-bookings {
+            background-color: #e3f2fd;
+            border-left: 5px solid #2196F3;
+        }
+        
+        .attended {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+        }
+        
+        .not-attended {
+            background-color: #ffebee;
+            border-left: 5px solid #F44336;
+        }
+        
+        .controller-sent {
+            background-color: #fff8e1;
+            border-left: 5px solid #FFC107;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-attended {
+            background-color: #e8f5e9;
+            color: #4CAF50;
+        }
+        
+        .status-not-attended {
+            background-color: #ffebee;
+            color: #F44336;
+        }
+        
+        .status-controller {
+            background-color: #fff8e1;
+            color: #FFC107;
+        }
+        
+        .status-not-controller {
+            background-color: #f5f5f5;
+            color: #9e9e9e;
+        }
+
+        /* Chart container styles */
+        .charts-section {
+            margin-bottom: 30px;
+        }
+
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-box {
+            flex: 1;
+            min-width: 45%;
+            height: 300px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .chart-canvas-container {
+            height: 250px;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-dashboard">
+        <h1>Admin Dashboard</h1>
+        
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="section">
+            <h2>Booking Statistics</h2>
+            <div class="stats-container">
+                <div class="stat-box total-bookings">
+                    <h3>Total Bookings</h3>
+                    <p>{{ total_bookings }}</p>
+                </div>
+                <div class="stat-box attended">
+                    <h3>Attended</h3>
+                    <p>{{ attended_bookings }}</p>
+                </div>
+                <div class="stat-box not-attended">
+                    <h3>Not Attended</h3>
+                    <p>{{ not_attended_bookings }}</p>
+                </div>
+                <div class="stat-box controller-sent">
+                    <h3>Sent to Controller</h3>
+                    <p>{{ sent_to_controller }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- New Charts Section -->
+        <div class="section charts-section">
+            <h2>Statistical Charts</h2>
+            <div class="charts-container">
+                <div class="chart-box">
+                    <h3 class="chart-title">Attendance by Sport</h3>
+                    <div class="chart-canvas-container">
+                        <canvas id="sportAttendanceChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h3 class="chart-title">Overall Attendance Status</h3>
+                    <div class="chart-canvas-container">
+                        <canvas id="attendanceStatusChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h3 class="chart-title">Attendance by Day of Week</h3>
+                    <div class="chart-canvas-container">
+                        <canvas id="dayAttendanceChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-box">
+                    <h3 class="chart-title">Controller Status by Sport</h3>
+                    <div class="chart-canvas-container">
+                        <canvas id="controllerStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bookings Table Section -->
+        <div class="section">
+            <h2>Manage Bookings</h2>
+            
+            <!-- Filter Controls -->
+            <div class="filter-controls">
+                <select id="sportFilter">
+                    <option value="all">All Sports</option>
+                    <option value="Cricket">Cricket</option>
+                    <option value="Badminton">Badminton</option>
+                    <option value="Tennis">Tennis</option>
+                </select>
+                
+                <select id="statusFilter">
+                    <option value="all">All Statuses</option>
+                    <option value="attended">Attended</option>
+                    <option value="not-attended">Not Attended</option>
+                    <option value="sent-controller">Sent to Controller</option>
+                    <option value="not-sent-controller">Not Sent to Controller</option>
+                </select>
+                
+                <input type="date" id="dateFilter" name="dateFilter" placeholder="Select date">
+                
+                <button onclick="applyFilters()">Apply Filters</button>
+                <button onclick="resetFilters()">Reset</button>
+            </div>
+            
+            <form action="/process-admin-action" method="POST">
+                <table id="bookingsTable">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" onclick="toggleAllCheckboxes()"></th>
+                            <th>Ticket ID</th>
+                            <th>Email</th>
+                            <th>Sport</th>
+                            <th>Slot</th>
+                            <th>Date</th>
+                            <th>Attendance</th>
+                            <th>Controller Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td><input type="checkbox" name="selected_bookings" value="{{ booking.id }}"></td>
+                            <td>{{ booking.ticket_id }}</td>
+                            <td>{{ booking.email }}</td>
+                            <td>{{ booking.sport }}</td>
+                            <td>{{ booking.slot_time }}</td>
+                            <td>{{ booking.date|datetime }}</td>
+                            <td>
+                                {% if booking.attended %}
+                                <span class="status-badge status-attended">Attended</span>
+                                {% else %}
+                                <span class="status-badge status-not-attended">Not Attended</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if booking.sent_to_controller %}
+                                <span class="status-badge status-controller">Sent to Controller</span>
+                                {% else %}
+                                <span class="status-badge status-not-controller">Not Sent</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <div class="actions">
+                    <select name="action">
+                        <option value="">Select Action</option>
+                        <option value="delete">Delete Selected</option>
+                        <option value="mark-attended">Mark as Attended</option>
+                        <option value="mark-not-attended">Mark as Not Attended</option>
+                        <option value="send-to-controller">Send to Controller</option>
+                    </select>
+                    <button type="submit">Apply</button>
+                </div>
+            </form>
+        </div>
+        
+        
+        
+        <div class="back-link">
+            <a href="/">Back to Home</a>
+        </div>
+    </div>
+    
+    <script>
+        function toggleAllCheckboxes() {
+            var mainCheckbox = document.getElementById('selectAll');
+            var checkboxes = document.getElementsByName('selected_bookings');
+            
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = mainCheckbox.checked;
+            }
+        }
+        
+        function applyFilters() {
+            var sportFilter = document.getElementById('sportFilter').value;
+            var statusFilter = document.getElementById('statusFilter').value;
+            var dateFilter = document.getElementById('dateFilter').value;
+            var table = document.getElementById('bookingsTable');
+            var rows = table.getElementsByTagName('tr');
+            
+            for (var i = 1; i < rows.length; i++) {
+                var row = rows[i];
+                var sportCell = row.getElementsByTagName('td')[3];
+                var attendedCell = row.getElementsByTagName('td')[6];
+                var controllerCell = row.getElementsByTagName('td')[7];
+                var dateCell = row.getElementsByTagName('td')[5];
+                
+                var showRow = true;
+                
+                // Apply sport filter
+                if (sportFilter !== 'all' && sportCell.textContent !== sportFilter) {
+                    showRow = false;
+                }
+                
+                // Apply status filter
+                if (statusFilter === 'attended' && !attendedCell.querySelector('.status-attended')) {
+                    showRow = false;
+                } else if (statusFilter === 'not-attended' && !attendedCell.querySelector('.status-not-attended')) {
+                    showRow = false;
+                } else if (statusFilter === 'sent-controller' && !controllerCell.querySelector('.status-controller')) {
+                    showRow = false;
+                } else if (statusFilter === 'not-sent-controller' && !controllerCell.querySelector('.status-not-controller')) {
+                    showRow = false;
+                }
+                
+                // Apply date filter
+                if (dateFilter !== '' && dateCell.textContent.trim() !== dateFilter) {
+                    showRow = false;
+                }
+                
+                // Show or hide row
+                row.style.display = showRow ? '' : 'none';
+            }
+        }
+        
+        function resetFilters() {
+            document.getElementById('sportFilter').value = 'all';
+            document.getElementById('statusFilter').value = 'all';
+            document.getElementById('dateFilter').value = ''; // Reset date filter
+            
+            var table = document.getElementById('bookingsTable');
+            var rows = table.getElementsByTagName('tr');
+            
+            for (var i = 1; i < rows.length; i++) {
+                rows[i].style.display = '';
+            }
+        }
+    
+        // Initialize charts when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Process the booking data to get statistics
+            const bookings = [];
+            
+            // In a real application, we would use actual data from the server
+            // For this example, let's create sample data based on the template structure
+            {% for booking in bookings %}
+            bookings.push({
+                sport: "{{ booking.sport }}",
+                attended: {{ booking.attended|lower }},
+                sent_to_controller: {{ booking.sent_to_controller|lower }},
+                date: "{{ booking.date|datetime }}",
+                day: new Date("{{ booking.date|datetime }}").toLocaleDateString('en-US', { weekday: 'long' })
+            });
+            {% endfor %}
+            
+            // If no bookings are available in the template, create sample data
+            if (bookings.length === 0) {
+                // Sample data for demonstration
+                const sports = ['Cricket', 'Badminton', 'Tennis'];
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                
+                for (let i = 0; i < 100; i++) {
+                    const sport = sports[Math.floor(Math.random() * sports.length)];
+                    const attended = Math.random() > 0.3;
+                    const sent_to_controller = Math.random() > 0.5;
+                    const day = days[Math.floor(Math.random() * days.length)];
+                    
+                    bookings.push({
+                        sport: sport,
+                        attended: attended,
+                        sent_to_controller: sent_to_controller,
+                        day: day
+                    });
+                }
+            }
+    
+            // Chart 1: Attendance by Sport
+            createSportAttendanceChart(bookings);
+            
+            // Chart 2: Overall Attendance Status
+            createAttendanceStatusChart(bookings);
+            
+            // Chart 3: Attendance by Day of Week
+            createDayAttendanceChart(bookings);
+            
+            // Chart 4: Controller Status by Sport
+            createControllerStatusChart(bookings);
+        });
+    
+        function createSportAttendanceChart(bookings) {
+            // Process data for sport attendance
+            const sportCounts = {};
+            const sports = ['Cricket', 'Badminton', 'Tennis'];
+            
+            sports.forEach(sport => {
+                sportCounts[sport] = {
+                    attended: 0,
+                    notAttended: 0
+                };
+            });
+            
+            bookings.forEach(booking => {
+                if (booking.sport in sportCounts) {
+                    if (booking.attended) {
+                        sportCounts[booking.sport].attended++;
+                    } else {
+                        sportCounts[booking.sport].notAttended++;
+                    }
+                }
+            });
+            
+            // Create the chart
+            const ctx = document.getElementById('sportAttendanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sports,
+                    datasets: [
+                        {
+                            label: 'Attended',
+                            data: sports.map(sport => sportCounts[sport].attended),
+                            backgroundColor: '#4CAF50',
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        },
+                        {
+                            label: 'Not Attended',
+                            data: sports.map(sport => sportCounts[sport].notAttended),
+                            backgroundColor: '#F44336',
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Bookings'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Sport'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    
+        function createAttendanceStatusChart(bookings) {
+            // Process data for attendance status
+            const attendedCount = bookings.filter(booking => booking.attended).length;
+            const notAttendedCount = bookings.filter(booking => !booking.attended).length;
+            
+            // Create the chart
+            const ctx = document.getElementById('attendanceStatusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Attended', 'Not Attended'],
+                    datasets: [
+                        {
+                            data: [attendedCount, notAttendedCount],
+                            backgroundColor: ['#4CAF50', '#F44336'],
+                            hoverOffset: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        }
+    
+        function createDayAttendanceChart(bookings) {
+            // Process data for day attendance
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const dayAttendance = {};
+            
+            days.forEach(day => {
+                dayAttendance[day] = {
+                    attended: 0,
+                    notAttended: 0
+                };
+            });
+            
+            bookings.forEach(booking => {
+                const day = booking.day;
+                if (day in dayAttendance) {
+                    if (booking.attended) {
+                        dayAttendance[day].attended++;
+                    } else {
+                        dayAttendance[day].notAttended++;
+                    }
+                }
+            });
+            
+            // Create the chart
+            const ctx = document.getElementById('dayAttendanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: days,
+                    datasets: [
+                        {
+                            label: 'Attended',
+                            data: days.map(day => dayAttendance[day].attended),
+                            borderColor: '#4CAF50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Not Attended',
+                            data: days.map(day => dayAttendance[day].notAttended),
+                            borderColor: '#F44336',
+                            backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Bookings'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Day of Week'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+    
+        function createControllerStatusChart(bookings) {
+            // Process data for controller status by sport
+            const sports = ['Cricket', 'Badminton', 'Tennis'];
+            const controllerStatus = {};
+            
+            sports.forEach(sport => {
+                controllerStatus[sport] = {
+                    sent: 0,
+                    notSent: 0
+                };
+            });
+            
+            bookings.forEach(booking => {
+                if (booking.sport in controllerStatus) {
+                    if (booking.sent_to_controller) {
+                        controllerStatus[booking.sport].sent++;
+                    } else {
+                        controllerStatus[booking.sport].notSent++;
+                    }
+                }
+            });
+            
+            // Create the chart
+            const ctx = document.getElementById('controllerStatusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sports,
+                    datasets: [
+                        {
+                            label: 'Sent to Controller',
+                            data: sports.map(sport => controllerStatus[sport].sent),
+                            backgroundColor: '#FFC107',
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        },
+                        {
+                            label: 'Not Sent',
+                            data: sports.map(sport => controllerStatus[sport].notSent),
+                            backgroundColor: '#9E9E9E',
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Bookings'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Sport'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

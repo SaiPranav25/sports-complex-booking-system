@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Play All Sports Complex</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#004b91">
+<link rel="manifest" href="/manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-image: url('https://s3.ap-southeast-1.amazonaws.com/images.deccanchronicle.com/dc-Cover-3tskblmdfueqmmotijd8vdnd34-20231024125157.Medi.jpeg');
+            background-size: cover;
+            background-position: left center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            color: #ffffff;
+            position: relative;
+        }
+        
+        body:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 1;
+        }
+        
+        .content {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            padding: 40px 0;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+            font-weight: 300;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-grow: 1;
+        }
+        
+        .image-showcase {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-left: 60px;
+        }
+        
+        .showcase-text {
+            max-width: 500px;
+        }
+        
+        .showcase-text h3 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        .showcase-text p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+        
+        .login-section {
+            width: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 40px;
+        }
+        
+        .login-options {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px 40px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+        }
+        
+        .login-options h3 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+        
+        a {
+            text-decoration: none;
+            margin: 10px 0;
+        }
+        
+        button {
+            background: linear-gradient(to right, #ff6a00, #ee0979);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            width: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <h1>PLAY ALL SPORTS COMPLEX</h1>
+            <h2>Your premier destination for sports and recreation</h2>
+        </div>
+        
+        <div class="main-container">
+            <div class="image-showcase">
+                <div class="showcase-text">
+                    <h3>State-of-the-Art Facilities</h3>
+                    <p>Our complex features professional-grade courts, fields, and training areas designed for athletes of all levels. From basketball and tennis to football and cricket, we've got you covered.</p>
+                    <p>Join today and experience the best sporting facilities in the region!</p>
+                </div>
+            </div>
+            
+            <div class="login-section">
+                <div class="login-options">
+                    <h3>Access Portal</h3>
+                    <a href="{{ url_for('admin_login') }}">
+                        <button>Admin Login</button>
+                    </a>
+                    <a href="{{ url_for('user_login') }}">
+                        <button>User Login</button>
+                    </a>
+                    <a href="{{ url_for('controller_login') }}">
+                        <button>Controller Login</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Play All Sports Complex. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

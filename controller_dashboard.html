@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Controller Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#004b91">
+<link rel="manifest" href="/manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .controller-dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .search-container input {
+            padding: 8px;
+            width: 300px;
+            margin-right: 10px;
+        }
+        .search-container button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .search-container button:hover {
+            background-color: #45a049;
+        }
+        .attendance-btn {
+            padding: 6px 12px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .attend-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .not-attend-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-success {
+            color: green;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+        }
+        .flash-error {
+            color: red;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 5px;
+        }
+        .attended-status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        .attended-yes {
+            background-color: #e8f5e9;
+            color: #4CAF50;
+        }
+        .attended-no {
+            background-color: #ffebee;
+            color: #f44336;
+        }
+        #searchResult {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            display: none;
+        }
+        #searchResultInfo {
+            margin-bottom: 10px;
+        }
+        #noResultMessage {
+            color: #f44336;
+            font-weight: bold;
+            display: none;
+        }
+        /* Admin Notifications Styles */
+        .admin-notifications {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .notification-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .admin-action {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #2196F3;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .admin-action.mark-attended {
+            border-left-color: #4CAF50;
+        }
+        .admin-action.mark-not-attended {
+            border-left-color: #F44336;
+        }
+        .admin-action.delete {
+            border-left-color: #FF9800;
+        }
+        .action-time {
+            color: #999;
+            font-size: 0.8em;
+        }
+        
+        /* Highlight for rows affected by admin actions */
+        .admin-modified {
+            animation: highlight-fade 5s;
+        }
+        
+        @keyframes highlight-fade {
+            0% { background-color: #fffde7; }
+            100% { background-color: transparent; }
+        }
+        
+        /* Real-time update indicator */
+        .real-time-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            margin-left: 10px;
+            position: relative;
+        }
+        
+        .real-time-indicator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            opacity: 0.5;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+        
+        .admin-refresh {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        .admin-refresh:hover {
+            background-color: #1976D2;
+        }
+        
+        .highlighted-row {
+            background-color: #fffde7;
+            animation: highlight-fade 5s;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: opacity 0.5s ease;
+        }
+        
+        .notification.success {
+            background-color: #4CAF50;
+        }
+        
+        .notification.error {
+            background-color: #f44336;
+        }
+        
+        /* QR Scanner Styles */
+        .qr-scanner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .scanner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+        }
+        
+        .scanner-header button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        #qrVideo {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="controller-dashboard">
+        <h1>Controller Dashboard</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        <div class="dashboard-stats">
+            <div class="stat-card stat-total">
+                <div class="stat-label">Today's Total</div>
+                <div class="stat-value">{{ bookings|length }}</div>
+            </div>
+            <div class="stat-card stat-attended">
+                <div class="stat-label">Attended</div>
+                <div class="stat-value">{{ bookings|selectattr('attended', 'eq', true)|list|length }}</div>
+            </div>
+            <div class="stat-card stat-not-attended">
+                <div class="stat-label">Not Attended</div>
+                <div class="stat-value">{{ bookings|selectattr('attended', 'ne', true)|list|length }}</div>
+            </div>
+        </div>
+        
+        <div class="search-container">
+            <h3>Search Ticket</h3>
+            <div class="search-inputs">
+                <input type="text" id="ticketSearch" placeholder="Enter Ticket ID (e.g., TKT1234)">
+                <button onclick="searchTicket()">Search</button>
+                <button onclick="scanQRCode()" class="scan-btn">Scan QR Code</button>
+            </div>
+            
+            <div id="searchResult">
+                <div id="searchResultInfo"></div>
+                <div class="attendance-actions">
+                    <button id="markAttendedBtn" class="attendance-btn attend-btn" onclick="markAttendance(true)">Mark as Attended</button>
+                    <button id="markNotAttendedBtn" class="attendance-btn not-attend-btn" onclick="markAttendance(false)">Mark as Not Attended</button>
+                </div>
+            </div>
+            
+            <div id="noResultMessage">No booking found with this ticket ID</div>
+        </div>
+        
+        <!-- Admin Actions Section -->
+        <div class="admin-notifications" id="adminNotificationsArea">
+            <h3>Admin Actions <span class="real-time-indicator"></span>
+                <button class="admin-refresh" onclick="checkForAdminNotifications()">Refresh</button>
+            </h3>
+            <div class="notification-list" id="notificationList">
+                <!-- Notifications will be populated here dynamically -->
+                <p>No recent admin actions</p>
+            </div>
+        </div>
+        
+        <div class="filter-container">
+            <h3>Filter Bookings</h3>
+            <div class="filter-controls">
+                <select id="sportFilter">
+                    <option value="all">All Sports</option>
+                    <option value="Cricket">Cricket</option>
+                    <option value="Badminton">Badminton</option>
+                    <option value="Tennis">Tennis</option>
+                </select>
+                
+                <select id="timeFilter">
+                    <option value="all">All Times</option>
+                    <option value="morning">Morning</option>
+                    <option value="afternoon">Afternoon</option>
+                    <option value="evening">Evening</option>
+                </select>
+                
+                <select id="attendanceFilter">
+                    <option value="all">All Status</option>
+                    <option value="attended">Attended</option>
+                    <option value="not-attended">Not Attended</option>
+                </select>
+                
+                <button onclick="applyFilters()">Apply Filters</button>
+                <button onclick="resetFilters()">Reset</button>
+            </div>
+        </div>
+        
+        <h2>Today's Bookings</h2>
+        <table id="bookingsTable">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Email</th>
+                    <th>Sport</th>
+                    <th>Slot Time</th>
+                    <th>Attendance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr data-sport="{{ booking.sport }}" data-time="{{ booking.slot_time.split(' ')[1] }}" data-attendance="{{ 'attended' if booking.attended else 'not-attended' }}">
+                    <td>{{ booking.ticket_id }}</td>
+                    <td>{{ booking.email }}</td>
+                    <td>{{ booking.sport }}</td>
+                    <td>{{ booking.slot_time }}</td>
+                    <td>
+                        <span class="attended-status {% if booking.attended %}attended-yes{% else %}attended-no{% endif %}">
+                            {% if booking.attended %}Attended{% else %}Not Attended{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="attendance-btn attend-btn" onclick="updateAttendance('{{ booking.ticket_id }}', true)">Mark Attended</button>
+                        <button class="attendance-btn not-attend-btn" onclick="updateAttendance('{{ booking.ticket_id }}', false)">Mark Not Attended</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="back-link">
+            <a href="/">← Back to Home</a>
+        </div>
+    </div>
+    
+    <script>
+        // Global variable to store the current ticket id being processed
+        let currentTicketId = null;
+        
+        // Global variable to store admin notifications
+        let adminNotifications = [];
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide search result and no result message initially
+            document.getElementById('searchResult').style.display = 'none';
+            document.getElementById('noResultMessage').style.display = 'none';
+            
+            // Initial check for admin notifications
+            checkForAdminNotifications();
+            
+            // Check periodically (every 30 seconds)
+            setInterval(checkForAdminNotifications, 30000);
+        });
+        
+        // Function to receive admin notifications (called when page loads and periodically)
+        function checkForAdminNotifications() {
+            const lastCheckTimestamp = localStorage.getItem('lastAdminNotificationCheck') || '2000-01-01T00:00:00Z';
+            
+            fetch(`/api/admin-notifications?since=${encodeURIComponent(lastCheckTimestamp)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.notifications && data.notifications.length > 0) {
+                        // Update the last check timestamp
+                        localStorage.setItem('lastAdminNotificationCheck', new Date().toISOString());
+                        
+                        // Add new notifications
+                        adminNotifications = [...data.notifications, ...adminNotifications].slice(0, 50); // Keep last 50
+                        
+                        // Display notifications
+                        displayAdminNotifications();
+                        
+                        // Update UI for affected bookings
+                        updateBookingsFromAdminActions(data.notifications);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking for admin notifications:', error);
+                });
+        }
+
+        // Function to display admin notifications in controller dashboard
+        function displayAdminNotifications() {
+            // Get the notification list element
+            const notificationList = document.getElementById('notificationList');
+            notificationList.innerHTML = '';
+            
+            if (adminNotifications.length === 0) {
+                notificationList.innerHTML = '<p>No recent admin actions</p>';
+                return;
+            }
+            
+            adminNotifications.forEach(notification => {
+                const actionDiv = document.createElement('div');
+                actionDiv.className = `admin-action ${notification.action}`;
+                
+                const actionTime = new Date(notification.timestamp).toLocaleString();
+                const bookingsCount = notification.booking_ids.length;
+                
+                let actionText = '';
+                switch(notification.action) {
+                    case 'mark-attended':
+                        actionText = `marked ${bookingsCount} booking(s) as attended`;
+                        break;
+                    case 'mark-not-attended':
+                        actionText = `marked ${bookingsCount} booking(s) as not attended`;
+                        break;
+                    case 'delete':
+                        actionText = `deleted ${bookingsCount} booking(s)`;
+                        break;
+                    default:
+                        actionText = `performed action '${notification.action}' on ${bookingsCount} booking(s)`;
+                }
+                
+                actionDiv.innerHTML = `
+                    <p><strong>${notification.admin_user}</strong> ${actionText}</p>
+                    <p class="action-time">${actionTime}</p>
+                `;
+                
+                notificationList.appendChild(actionDiv);
+            });
+        }
+
+        // Function to update bookings in the controller dashboard based on admin actions
+        function updateBookingsFromAdminActions(notifications) {
+            notifications.forEach(notification => {
+                if (notification.action === 'delete') {
+                    // For deleted bookings, remove them from the table
+                    notification.booking_ids.forEach(id => {
+                        const rows = document.querySelectorAll('#bookingsTable tbody tr');
+                        rows.forEach(row => {
+                            const ticket = row.cells[0].textContent.trim();
+                            if (notification.booking_ids.includes(ticket)) {
+                                row.remove();
+                            }
+                        });
+                    });
+                } else if (notification.action === 'mark-attended' || notification.action === 'mark-not-attended') {
+                    // For attendance changes, update the status
+                    const isAttended = notification.action === 'mark-attended';
+                    
+                    notification.booking_ids.forEach(ticketId => {
+                        const rows = document.querySelectorAll('#bookingsTable tbody tr');
+                        rows.forEach(row => {
+                            const rowTicketId = row.cells[0].textContent.trim();
+                            if (rowTicketId === ticketId) {
+                                // Update the status cell
+                                const statusCell = row.cells[4].querySelector('.attended-status');
+                                statusCell.textContent = isAttended ? 'Attended' : 'Not Attended';
+                                statusCell.className = `attended-status ${isAttended ? 'attended-yes' : 'attended-no'}`;
+                                
+                                // Update data attribute for filtering
+                                row.setAttribute('data-attendance', isAttended ? 'attended' : 'not-attended');
+                                
+                                // Add highlight effect to show it was modified by admin
+                                row.classList.add('admin-modified');
+                            }
+                        });
+                    });
+                    
+                    // Update stats counters
+                    updateStatsCounters();
+                }
+            });
+        }
+        
+        function searchTicket() {
+            const ticketId = document.getElementById('ticketSearch').value.trim();
+            if (!ticketId) {
+                alert('Please enter a ticket ID');
+                return;
+            }
+            
+            fetch(`/api/search-ticket?query=${ticketId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show the search result
+                        document.getElementById('searchResult').style.display = 'block';
+                        document.getElementById('noResultMessage').style.display = 'none';
+                        
+                        // Update the result info
+                        const booking = data.booking;
+                        currentTicketId = booking.ticket_id;
+                        const attendedStatus = booking.attended ? 'Attended' : 'Not Attended';
+                        const statusClass = booking.attended ? 'attended-yes' : 'attended-no';
+                        
+                        document.getElementById('searchResultInfo').innerHTML = `
+                            <div class="search-result-card">
+                                <p><strong>Ticket ID:</strong> ${booking.ticket_id}</p>
+                                <p><strong>Email:</strong> ${booking.email}</p>
+                                <p><strong>Sport:</strong> ${booking.sport}</p>
+                                <p><strong>Slot Time:</strong> ${booking.slot_time}</p>
+                                <p><strong>Attendance Status:</strong> <span class="attended-status ${statusClass}">${attendedStatus}</span></p>
+                            </div>
+                        `;
+                        
+                        // Highlight the row in the table if it exists
+                        highlightBookingRow(booking.ticket_id);
+                    } else {
+                        // Show no result message
+                        document.getElementById('searchResult').style.display = 'none';
+                        document.getElementById('noResultMessage').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while searching for the ticket');
+                });
+        }
+        
+        function markAttendance(status) {
+            if (!currentTicketId) {
+                alert('No ticket selected');
+                return;
+            }
+            
+            updateAttendance(currentTicketId, status);
+        }
+        
+        function updateAttendance(ticketId, status) {
+            const formData = new FormData();
+            formData.append('ticket_id', ticketId);
+            formData.append('status', status);
+            
+            fetch('/mark-attendance', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const successMessage = `Ticket ${ticketId} has been marked as ${status ? 'Attended' : 'Not Attended'}`;
+                    showNotification(successMessage, 'success');
+                    
+                    // Update UI without full page reload
+                    updateUIAfterAttendanceChange(ticketId, status);
+                } else {
+                    showNotification(`Error: ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('An error occurred while updating attendance status', 'error');
+            });
+        }
+        
+        function updateUIAfterAttendanceChange(ticketId, status) {
+            // Update the search result if this is the current ticket
+            if (currentTicketId === ticketId) {
+                const attendedStatus = status ? 'Attended' : 'Not Attended';
+                const statusClass = status ? 'attended-yes' : 'attended-no';
+                
+                const statusElement = document.querySelector('#searchResultInfo .attended-status');
+                if (statusElement) {
+                    statusElement.textContent = attendedStatus;
+                    statusElement.className = `attended-status ${statusClass}`;
+                }
+            }
+            
+            // Update the table row
+            const rows = document.querySelectorAll('#bookingsTable tbody tr');
+            rows.forEach(row => {
+                const rowTicketId = row.cells[0].textContent.trim();
+                if (rowTicketId === ticketId) {
+                    const statusCell = row.cells[4].querySelector('.attended-status');
+                    statusCell.textContent = status ? 'Attended' : 'Not Attended';
+                    statusCell.className = `attended-status ${status ? 'attended-yes' : 'attended-no'}`;
+                    
+                    // Update data attribute for filtering
+                    row.setAttribute('data-attendance', status ? 'attended' : 'not-attended');
+                }
+            });
+            
+            // Update stats counters
+            updateStatsCounters();
+        }
+        
+        function updateStatsCounters() {
+            const rows = document.querySelectorAll('#bookingsTable tbody tr');
+            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+            
+            const total = visibleRows.length;
+            const attended = visibleRows.filter(row => row.getAttribute('data-attendance') === 'attended').length;
+            const notAttended = total - attended;
+            
+            document.querySelector('.stat-total .stat-value').textContent = total;
+            document.querySelector('.stat-attended .stat-value').textContent = attended;
+            document.querySelector('.stat-not-attended .stat-value').textContent = notAttended;
+        }
+        
+        function highlightBookingRow(ticketId) {
+            // Remove highlight from all rows
+            const rows = document.querySelectorAll('#bookingsTable tbody tr');
+            rows.forEach(row => row.classList.remove('highlighted-row'));
+            
+            // Add highlight to matching row
+            rows.forEach(row => {
+                const rowTicketId = row.cells[0].textContent.trim();
+                if (rowTicketId === ticketId) {
+                    row.classList.add('highlighted-row');
+                    // Scroll to the row
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+        
+        function scanQRCode() {
+            // Check if the browser supports the BarcodeDetector API
+            if ('BarcodeDetector' in window) {
+                alert('Please allow camera access to scan QR codes');
+                
+                // Create a QR code scanner UI
+                const scannerDiv = document.createElement('div');
+                scannerDiv.className = 'qr-scanner';
+                scannerDiv.innerHTML = `
+                    <div class="scanner-header">
+                        <h3>Scan QR Code</h3>
+                        <button onclick="closeScannerUI()">Close</button>
+                    </div>
+                    <video id="qrVideo" autoplay></video>
+                `;
+                
+                document.body.appendChild(scannerDiv);
+                
+                const video = document.getElementById('qrVideo');
+                
+                // Get camera access
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                    .then(stream => {
+                        video.srcObject = stream;
+                        
+                        const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+                        
+                        // Detect QR codes in video stream
+                        const detectCodes = async () => {
+                            try {
+                                const codes = await barcodeDetector.detect(video);
+                                if (codes.length > 0) {
+                                    // Found a QR code
+                                    const ticketId = codes[0].rawValue;
+                                    
+                                    // Close the scanner
+                                    closeScannerUI();
+                                    
+                                    // Set the ticket ID in the search box and search
+                                    document.getElementById('ticketSearch').value = ticketId;
+                                    searchTicket();
+                                }
+                                
+                                // Continue scanning
+                                requestAnimationFrame(detectCodes);
+                            } catch (error) {
+                                console.error('QR detection error:', error);
+                            }
+                        };
+                        
+                        detectCodes();
+                    })
+                    .catch(error => {
+                        console.error('Camera access error:', error);
+                        alert('Could not access the camera. Please check permissions.');
+                        closeScannerUI();
+                    });
+            } else {
+                alert('Your browser does not support QR code scanning. Please enter the ticket ID manually.');
+            }
+        }
+        
+        function closeScannerUI() {
+            const scannerDiv = document.querySelector('.qr-scanner');
+            if (scannerDiv) {
+                // Stop the video stream
+                const video = document.getElementById('qrVideo');
+                if (video && video.srcObject) {
+                    const tracks = video.srcObject.getTracks();
+                    tracks.forEach(track => track.stop());
+                }
+                
+                // Remove the scanner UI
+                document.body.removeChild(scannerDiv);
+            }
+        }
+        
+        function applyFilters() {
+            const sportFilter = document.getElementById('sportFilter').value;
+            const timeFilter = document.getElementById('timeFilter').value;
+            const attendanceFilter = document.getElementById('attendanceFilter').value;
+            const rows = document.querySelectorAll('#bookingsTable tbody tr');
+            
+            rows.forEach(row => {
+                const rowSport = row.getAttribute('data-sport');
+                const rowTime = row.getAttribute('data-time');
+                const rowAttendance = row.getAttribute('data-attendance');
+                
+                const sportMatch = sportFilter === 'all' || rowSport === sportFilter;
+                
+                // Time filter logic
+                let timeMatch = timeFilter === 'all';
+                if (timeFilter === 'morning' && parseInt(rowTime.split(':')[0]) < 12) {
+                    timeMatch = true;
+                } else if (timeFilter === 'afternoon' && parseInt(rowTime.split(':')[0]) >= 12 && parseInt(rowTime.split(':')[0]) < 17) {
+                    timeMatch = true;
+                } else if (timeFilter === 'evening' && parseInt(rowTime.split(':')[0]) >= 17) {
+                    timeMatch = true;
+                }
+                
+                const attendanceMatch = attendanceFilter === 'all' || rowAttendance === attendanceFilter;
+                
+                if (sportMatch && timeMatch && attendanceMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update stats counters after filtering
+            updateStatsCounters();
+        }
+        
+        function resetFilters() {
+            document.getElementById('sportFilter').value = 'all';
+            document.getElementById('timeFilter').value = 'all';
+            document.getElementById('attendanceFilter').value = 'all';
+            
+            const rows = document.querySelectorAll('#bookingsTable tbody tr');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+            
+            // Update stats counters after resetting filters
+            updateStatsCounters();
+        }
+        
+        // Handle Enter key press in the search box
+        document.getElementById('ticketSearch').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                searchTicket();
+            }
+        });
+    </script>
+</body>
+</html>
